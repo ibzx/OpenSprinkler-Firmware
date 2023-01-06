@@ -93,7 +93,7 @@ extern ProgramData pd;
 	LiquidCrystal OpenSprinkler::lcd;
 	extern SdFat sd;
 #else
-	#if defined(OSPI)
+	#if defined(OSPI) || defined(BPI)
 		byte OpenSprinkler::pin_sr_data = PIN_SR_DATA;
 	#endif
 	// todo future: LCD define for Linux-based systems
@@ -1186,7 +1186,7 @@ void OpenSprinkler::apply_all_station_bits() {
 
 		for(s=0;s<8;s++) {
 			digitalWrite(PIN_SR_CLOCK, LOW);
-	#if defined(OSPI) // if OSPI, use dynamically assigned pin_sr_data
+	#if defined(OSPI) || defined(BPI)// if OSPI, use dynamically assigned pin_sr_data
 			digitalWrite(pin_sr_data, (sbits & ((byte)1<<(7-s))) ? HIGH : LOW );
 	#else
 			digitalWrite(PIN_SR_DATA, (sbits & ((byte)1<<(7-s))) ? HIGH : LOW );
@@ -1777,6 +1777,7 @@ void OpenSprinkler::switch_rfstation(RFStationData *data, bool turnon) {
  * Third byte is either 0 or 1 for active low (GND) or high (+5V) relays
  */
 void OpenSprinkler::switch_gpiostation(GPIOStationData *data, bool turnon) {
+	DEBUG_PRINTLN("switch_gpiostation");
 	byte gpio = (data->pin[0] - '0') * 10 + (data->pin[1] - '0');
 	byte activeState = data->active - '0';
 
