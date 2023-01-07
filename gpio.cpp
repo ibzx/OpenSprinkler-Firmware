@@ -340,7 +340,6 @@ void gpio_write(int fd, byte value) {
 
 /** Write digital value */
 void digitalWrite(int pin, byte value) {
-	DEBUG_PRINTLN("RASPERRY");
 	int fd = gpio_fd_open(pin);
 	if (fd < 0) {
 		return;
@@ -531,7 +530,6 @@ gpiod_line* pinToLine(gpiod_chip* chip, int pin){
 }
 
 void pinMode(int pin, byte mode) {
-	DEBUG_PRINTLN("pinMode");
 	struct gpiod_chip *chip;
 	struct gpiod_line *line;
 	chip = pinToChip(pin);
@@ -610,9 +608,7 @@ void gpio_write(int fd, byte value) {
 #else
 
 void pinMode(int pin, byte mode) {}
-void digitalWrite(int pin, byte value) {
-	DEBUG_PRINTLN("DUMMY");
-}
+void digitalWrite(int pin, byte value) {}
 byte digitalRead(int pin) {return 0;}
 void attachInterrupt(int pin, const char* mode, void (*isr)(void)) {}
 int gpio_fd_open(int pin, int mode) {return 0;}
