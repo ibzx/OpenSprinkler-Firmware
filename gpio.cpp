@@ -441,6 +441,170 @@ void attachInterrupt(int pin, const char* mode, void (*isr)(void)) {
 			delay(1) ;
 	pthread_mutex_unlock (&pinMutex) ;
 }
+#elif defined(BPI)
+#include <gpiod.h>
+#include <stdio.h>
+#include <iostream>
+#include <string>
+#include <string_view>
+#include <unistd.h>
+
+#ifndef	CONSUMER
+#define	CONSUMER	"OpenSprinkler"
+#endif
+
+char gpiochip0[] = "gpiochip0";
+char gpiochip1[] = "gpiochip1";
+
+char *pinToChipName(int pin){
+
+	switch(pin){
+		case 40: 
+			return gpiochip1;
+		case 35:
+			return gpiochip1;
+		case 12:
+			return gpiochip1;
+		case 37:
+			return gpiochip1;
+		case 38:
+			return gpiochip1;
+		default:
+			return gpiochip0;
+	}
+}
+
+int pinToLineNum(int pin){
+	switch(pin){
+		case 36: return 21;
+		case 27: return 63;
+		case 28: return 64;
+		case 16: return 65;
+		case 18: return 66;
+		case 22: return 67;
+		case 11: return 68;
+		case 13: return 69;
+		case 7: return 70;
+		case 33: return 71;
+		case 15: return 72;
+		case 19: return 73;
+		case 21: return 74;
+		case 24: return 75;
+		case 23: return 76;
+		case 8: return 77;
+		case 10: return 78;
+		case 29: return 79;
+		case 31: return 80;
+		case 26: return 81;
+		case 3: return 82;
+		case 5: return 83;
+		case 32: return 84;
+		case 40: return 4;
+		case 35: return 7;
+		case 12: return 8;
+		case 37: return 9;
+		case 38: return 10;
+	}
+	return -1;
+}
+
+gpiod_chip* pinToChip(int pin){
+	struct gpiod_chip *chip;
+	char *chipname = pinToChipName(pin);
+	chip = gpiod_chip_open_by_name(chipname);
+	if (!chip) {
+		printf("OpenChip Failed - Pin %d - Chip %s\n",pin, chipname);
+	}
+	return chip;
+}
+
+gpiod_line* pinToLine(gpiod_chip* chip, int pin){
+	int lineNum = pinToLineNum(pin);
+	struct gpiod_line *line;
+	line = gpiod_chip_get_line(chip, lineNum);
+	if (!line) {
+		printf("OpenLine Failed - Pin %d - Line %d\n",pin, lineNum);
+	}
+	return line;
+
+}
+
+void pinMode(int pin, byte mode) {
+	struct gpiod_chip *chip;
+	struct gpiod_line *line;
+	chip = pinToChip(pin);
+	if (!chip) 
+		return;
+	line = pinToLine(chip,pin);
+	if (!line){
+		gpiod_chip_close(chip);
+		return;
+	}
+	if(mode == OUTPUT){
+		gpiod_line_request_output(line, CONSUMER, 0);
+	} else{
+		gpiod_line_request_input(line, CONSUMER);
+	}
+	gpiod_line_release(line);
+	gpiod_chip_close(chip);
+
+}
+void digitalWrite(int pin, byte value) {
+	struct gpiod_chip *chip;
+	struct gpiod_line *line;
+	int i, ret;
+	chip = pinToChip(pin);
+	if (!chip) 
+		return;
+	line = pinToLine(chip,pin);
+	if (!line){
+		gpiod_chip_close(chip);
+		return;
+	}
+	
+	ret = gpiod_line_request_output(line, CONSUMER, 0);
+	if(ret != 0){
+		printf("digitalWrite - LINE FAILED- Pin %d - Ret %d\n",pin, ret);
+		return;
+	}
+	ret = gpiod_line_set_value(line, (int)value);
+	if(ret != 0){
+		DEBUG_PRINTLN("LINE WRITE OUTPUT FAILED");
+		return;
+	}
+	gpiod_line_release(line);
+	gpiod_chip_close(chip);
+}
+byte digitalRead(int pin) {
+	struct gpiod_chip *chip;
+	struct gpiod_line *line;
+	int i, ret;
+	chip = pinToChip(pin);
+	if (!chip) 
+		return 0;
+	line = pinToLine(chip,pin);
+	if (!line){
+		gpiod_chip_close(chip);
+		return 0;
+	}
+	
+	ret = gpiod_line_request_input(line, CONSUMER);
+	ret = gpiod_line_get_value(line);
+	gpiod_line_release(line);
+	gpiod_chip_close(chip);
+	return (byte)ret;
+}
+int gpio_fd_open(int pin, int mode) {
+	DEBUG_PRINTLN("gpio_fd_open");
+	return 0;
+}
+void gpio_fd_close(int fd) {
+	DEBUG_PRINTLN("gpio_fd_close");
+}
+void gpio_write(int fd, byte value) {
+	DEBUG_PRINTLN("gpio_write");
+}
+
 #else
 
 void pinMode(int pin, byte mode) {}

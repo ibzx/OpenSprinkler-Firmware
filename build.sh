@@ -15,6 +15,11 @@ if [ "$1" == "demo" ]; then
 	apt-get install -y libmosquitto-dev
 	echo "Compiling firmware..."
 	g++ -o OpenSprinkler -DDEMO -std=c++14 -m32 main.cpp OpenSprinkler.cpp program.cpp opensprinkler_server.cpp utils.cpp weather.cpp gpio.cpp etherport.cpp mqtt.cpp -lpthread -lmosquitto
+elif [ "$1" == "bpi" ]; then
+	echo "Installing required libraries..."
+	apt-get install -y libmosquitto-dev libgpiod-dev
+	echo "Compiling firmware..."
+	g++ -o OpenSprinkler -DBPI main.cpp OpenSprinkler.cpp program.cpp opensprinkler_server.cpp utils.cpp weather.cpp gpio.cpp etherport.cpp mqtt.cpp -lpthread -lmosquitto -lgpiod
 elif [ "$1" == "osbo" ]; then
 	echo "Installing required libraries..."
 	apt-get install -y libmosquitto-dev

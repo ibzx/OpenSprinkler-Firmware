@@ -436,6 +436,22 @@ enum {
 	#define PIN_FREE_LIST     {38,39,34,35,45,44,26,47,27,65,63,62,37,36,33,32,61,86,88,87,89,76,77,74,72,73,70,71}
 	#define ETHER_BUFFER_SIZE   16384
 
+#elif defined(BPI) // for Banana Pi M5
+	#define OS_HW_VERSION    OSPI_HW_VERSION_BASE
+	#define PIN_SR_LATCH      15    // shift register latch pin
+	#define PIN_SR_DATA       13    // shift register data pin
+	#define PIN_SR_CLOCK      26    // shift register clock pin
+	#define PIN_SR_OE         11    // shift register output enable pin
+	#define PIN_SENSOR1       8
+	#define PIN_SENSOR2       16
+	#define PIN_RFTX          10    // RF transmitter pin
+	//#define PIN_BUTTON_1      23    // button 1
+	//#define PIN_BUTTON_2      24    // button 2
+	//#define PIN_BUTTON_3      25    // button 3
+
+	#define PIN_FREE_LIST       {3,5,7,8,10,11,12,13,16,18,19,24,26,28,29,31,32,33,35,36,37,38,40}  // Phisical Pin Layout
+	#define ETHER_BUFFER_SIZE   16384
+
 #else // for demo / simulation
 	// use fake hardware pins
 	#if defined(DEMO)

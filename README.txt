@@ -1,3 +1,11 @@
+This works with Banana Pi M5 on Armbian with gpiod installed.
+I have not tested this with any Sensors. RF Transmitter does nothing.
+
+GPIO Pin numbers are the Physical Pin numbers
+
+sudo build.sh BPI
+
+
 ============================================
 ==== OpenSprinkler AVR/RPI/BBB Firmware ====
 ============================================

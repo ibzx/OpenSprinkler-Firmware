@@ -126,22 +126,38 @@ byte digitalReadExt(byte pin);
 #define INPUT  1
 
 #if defined(OSPI)
-#define INPUT_PULLUP 2
+	#define INPUT_PULLUP 2
 #else
-#define INPUT_PULLUP INPUT
+	#define INPUT_PULLUP INPUT
 #endif
 
 #define HIGH   1
 #define LOW    0
 
-void pinMode(int pin, byte mode);
-void digitalWrite(int pin, byte value);
-int gpio_fd_open(int pin, int mode = O_WRONLY);
-void gpio_fd_close(int fd);
-void gpio_write(int fd, byte value);
-byte digitalRead(int pin);
-// mode can be any of 'rising', 'falling', 'both'
-void attachInterrupt(int pin, const char* mode, void (*isr)(void));
+#if defined(BPI)
+	#include <gpiod.h>
+
+	char *pinToChipName(int pin);
+	int pinToLineNum(int pin);
+	gpiod_chip* pinToChip(int pin);
+	gpiod_line* pinToLine(gpiod_chip* chip, int pin);
+	void pinMode(int pin, byte mode);
+	void digitalWrite(int pin, byte value);
+	int gpio_fd_open(int pin, int mode = O_WRONLY);
+	void gpio_fd_close(int fd);
+	void gpio_write(int fd, byte value);
+	byte digitalRead(int pin);
+
+#else
+	void pinMode(int pin, byte mode);
+	void digitalWrite(int pin, byte value);
+	int gpio_fd_open(int pin, int mode = O_WRONLY);
+	void gpio_fd_close(int fd);
+	void gpio_write(int fd, byte value);
+	byte digitalRead(int pin);
+	// mode can be any of 'rising', 'falling', 'both'
+	void attachInterrupt(int pin, const char* mode, void (*isr)(void));
+#endif
 
 #endif
 
