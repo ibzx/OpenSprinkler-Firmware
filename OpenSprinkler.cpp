@@ -1777,7 +1777,6 @@ void OpenSprinkler::switch_rfstation(RFStationData *data, bool turnon) {
  * Third byte is either 0 or 1 for active low (GND) or high (+5V) relays
  */
 void OpenSprinkler::switch_gpiostation(GPIOStationData *data, bool turnon) {
-	DEBUG_PRINTLN("switch_gpiostation");
 	byte gpio = (data->pin[0] - '0') * 10 + (data->pin[1] - '0');
 	byte activeState = data->active - '0';
 
